@@ -58,11 +58,22 @@
             this.GoToSharedWithMeRootTtoolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.GoUpSharedWithMeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.SharedWithMeNotAvailableLabel = new System.Windows.Forms.Label();
+            this.TeamDriveTabPage = new System.Windows.Forms.TabPage();
+            this.TeamDrivePathTextBox = new System.Windows.Forms.TextBox();
+            this.TeamDrivePicker = new System.Windows.Forms.ListView();
+            this.TeamDriveContextMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.RefreshTeamDriveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.ConfigureTeamDriveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.TeamDriveSetupPanel = new System.Windows.Forms.Panel();
+            this.TeamDriveSetupLabel = new System.Windows.Forms.Label();
+            this.ConfigureTeamDriveButton = new System.Windows.Forms.Button();
             this.MyFilesContextMenu.SuspendLayout();
             this.FilesTabControl.SuspendLayout();
             this.MyFilesTabPage.SuspendLayout();
             this.SharedWithMeTabPage.SuspendLayout();
             this.SharedWithMeContextMenu.SuspendLayout();
+            this.TeamDriveTabPage.SuspendLayout();
+            this.TeamDriveContextMenu.SuspendLayout();
             this.SuspendLayout();
             // 
             // MyFilesContextMenu
@@ -216,6 +227,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.FilesTabControl.Controls.Add(this.MyFilesTabPage);
             this.FilesTabControl.Controls.Add(this.SharedWithMeTabPage);
+            this.FilesTabControl.Controls.Add(this.TeamDriveTabPage);
             this.FilesTabControl.Location = new System.Drawing.Point(16, 38);
             this.FilesTabControl.Name = "FilesTabControl";
             this.FilesTabControl.SelectedIndex = 0;
@@ -377,7 +389,112 @@
     " the Graph API service instead to connect to your OneDrive for Business site and" +
     " it will be available.";
             this.SharedWithMeNotAvailableLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
+            //
+            // TeamDriveTabPage
+            //
+            this.TeamDriveTabPage.Controls.Add(this.TeamDriveSetupPanel);
+            this.TeamDriveTabPage.Controls.Add(this.TeamDrivePathTextBox);
+            this.TeamDriveTabPage.Controls.Add(this.TeamDrivePicker);
+            this.TeamDriveTabPage.Location = new System.Drawing.Point(4, 29);
+            this.TeamDriveTabPage.Name = "TeamDriveTabPage";
+            this.TeamDriveTabPage.Padding = new System.Windows.Forms.Padding(3);
+            this.TeamDriveTabPage.Size = new System.Drawing.Size(746, 536);
+            this.TeamDriveTabPage.TabIndex = 2;
+            this.TeamDriveTabPage.Text = "Team KeePass";
+            this.TeamDriveTabPage.UseVisualStyleBackColor = true;
+            //
+            // TeamDrivePathTextBox
+            //
+            this.TeamDrivePathTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TeamDrivePathTextBox.BackColor = System.Drawing.Color.White;
+            this.TeamDrivePathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.TeamDrivePathTextBox.Location = new System.Drawing.Point(10, 15);
+            this.TeamDrivePathTextBox.Name = "TeamDrivePathTextBox";
+            this.TeamDrivePathTextBox.ReadOnly = true;
+            this.TeamDrivePathTextBox.Size = new System.Drawing.Size(730, 19);
+            this.TeamDrivePathTextBox.TabIndex = 8;
+            this.TeamDrivePathTextBox.TabStop = false;
+            //
+            // TeamDrivePicker
+            //
+            this.TeamDrivePicker.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TeamDrivePicker.ContextMenuStrip = this.TeamDriveContextMenu;
+            this.TeamDrivePicker.HideSelection = false;
+            this.TeamDrivePicker.LargeImageList = this.IconsList;
+            this.TeamDrivePicker.Location = new System.Drawing.Point(6, 54);
+            this.TeamDrivePicker.MultiSelect = false;
+            this.TeamDrivePicker.Name = "TeamDrivePicker";
+            this.TeamDrivePicker.ShowItemToolTips = true;
+            this.TeamDrivePicker.Size = new System.Drawing.Size(736, 470);
+            this.TeamDrivePicker.SmallImageList = this.IconsList;
+            this.TeamDrivePicker.TabIndex = 2;
+            this.TeamDrivePicker.TileSize = new System.Drawing.Size(244, 70);
+            this.TeamDrivePicker.UseCompatibleStateImageBehavior = false;
+            this.TeamDrivePicker.ItemSelectionChanged += new System.Windows.Forms.ListViewItemSelectionChangedEventHandler(this.TeamDrivePicker_ItemSelectionChanged);
+            this.TeamDrivePicker.DoubleClick += new System.EventHandler(this.TeamDrivePicker_DoubleClick);
+            this.TeamDrivePicker.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TeamDrivePicker_KeyUp);
+            //
+            // TeamDriveContextMenu
+            //
+            this.TeamDriveContextMenu.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.TeamDriveContextMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.RefreshTeamDriveToolStripMenuItem,
+            this.ConfigureTeamDriveToolStripMenuItem});
+            this.TeamDriveContextMenu.Name = "TeamDriveContextMenu";
+            this.TeamDriveContextMenu.Size = new System.Drawing.Size(200, 68);
+            //
+            // RefreshTeamDriveToolStripMenuItem
+            //
+            this.RefreshTeamDriveToolStripMenuItem.Name = "RefreshTeamDriveToolStripMenuItem";
+            this.RefreshTeamDriveToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F5;
+            this.RefreshTeamDriveToolStripMenuItem.Size = new System.Drawing.Size(199, 32);
+            this.RefreshTeamDriveToolStripMenuItem.Text = "&Refresh";
+            this.RefreshTeamDriveToolStripMenuItem.Click += new System.EventHandler(this.RefreshTeamDriveToolStripMenuItem_Click);
+            //
+            // ConfigureTeamDriveToolStripMenuItem
+            //
+            this.ConfigureTeamDriveToolStripMenuItem.Name = "ConfigureTeamDriveToolStripMenuItem";
+            this.ConfigureTeamDriveToolStripMenuItem.Size = new System.Drawing.Size(199, 32);
+            this.ConfigureTeamDriveToolStripMenuItem.Text = "&Configure...";
+            this.ConfigureTeamDriveToolStripMenuItem.Click += new System.EventHandler(this.ConfigureTeamDriveButton_Click);
+            //
+            // TeamDriveSetupPanel
+            //
+            this.TeamDriveSetupPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.TeamDriveSetupPanel.Controls.Add(this.TeamDriveSetupLabel);
+            this.TeamDriveSetupPanel.Controls.Add(this.ConfigureTeamDriveButton);
+            this.TeamDriveSetupPanel.Location = new System.Drawing.Point(6, 6);
+            this.TeamDriveSetupPanel.Name = "TeamDriveSetupPanel";
+            this.TeamDriveSetupPanel.Size = new System.Drawing.Size(736, 524);
+            this.TeamDriveSetupPanel.TabIndex = 11;
+            this.TeamDriveSetupPanel.Visible = false;
+            //
+            // TeamDriveSetupLabel
+            //
+            this.TeamDriveSetupLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.TeamDriveSetupLabel.Location = new System.Drawing.Point(168, 180);
+            this.TeamDriveSetupLabel.Name = "TeamDriveSetupLabel";
+            this.TeamDriveSetupLabel.Size = new System.Drawing.Size(400, 60);
+            this.TeamDriveSetupLabel.TabIndex = 0;
+            this.TeamDriveSetupLabel.Text = "Team Drive is not configured yet.\r\nClick the button below to select a SharePoint site and folder.";
+            this.TeamDriveSetupLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            //
+            // ConfigureTeamDriveButton
+            //
+            this.ConfigureTeamDriveButton.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.ConfigureTeamDriveButton.Location = new System.Drawing.Point(268, 260);
+            this.ConfigureTeamDriveButton.Name = "ConfigureTeamDriveButton";
+            this.ConfigureTeamDriveButton.Size = new System.Drawing.Size(200, 40);
+            this.ConfigureTeamDriveButton.TabIndex = 1;
+            this.ConfigureTeamDriveButton.Text = "Configure Team Drive";
+            this.ConfigureTeamDriveButton.UseVisualStyleBackColor = true;
+            this.ConfigureTeamDriveButton.Click += new System.EventHandler(this.ConfigureTeamDriveButton_Click);
+            //
             // OneDriveFilePickerDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
@@ -405,6 +522,9 @@
             this.SharedWithMeTabPage.ResumeLayout(false);
             this.SharedWithMeTabPage.PerformLayout();
             this.SharedWithMeContextMenu.ResumeLayout(false);
+            this.TeamDriveTabPage.ResumeLayout(false);
+            this.TeamDriveTabPage.PerformLayout();
+            this.TeamDriveContextMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -439,5 +559,14 @@
         private System.Windows.Forms.ToolStripMenuItem GoToSharedWithMeRootTtoolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem GoUpSharedWithMeToolStripMenuItem;
         private System.Windows.Forms.Label SharedWithMeNotAvailableLabel;
+        private System.Windows.Forms.TabPage TeamDriveTabPage;
+        private System.Windows.Forms.TextBox TeamDrivePathTextBox;
+        private System.Windows.Forms.ListView TeamDrivePicker;
+        private System.Windows.Forms.ContextMenuStrip TeamDriveContextMenu;
+        private System.Windows.Forms.ToolStripMenuItem RefreshTeamDriveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem ConfigureTeamDriveToolStripMenuItem;
+        private System.Windows.Forms.Panel TeamDriveSetupPanel;
+        private System.Windows.Forms.Label TeamDriveSetupLabel;
+        private System.Windows.Forms.Button ConfigureTeamDriveButton;
     }
 }

@@ -9,6 +9,16 @@ namespace KoenZomersKeePassOneDriveSync.Forms
 {
      public partial class OneDriveFilePickerDialog : Form
     {
+        // Team Drive configuration (loaded from per-database config)
+        private string _teamDriveId;
+        private string _teamDrivePath;
+        private string _teamDriveName;
+
+        /// <summary>
+        /// Path to the current KeePass database (for loading configuration)
+        /// </summary>
+        private readonly string _databasePath;
+
         /// <summary>
         /// Instance of the OneDrive API that can be used to communicate with the cloud service
         /// </summary>
@@ -25,11 +35,25 @@ namespace KoenZomersKeePassOneDriveSync.Forms
         private OneDriveItem CurrentSharedWithMeOneDriveItem;
 
         /// <summary>
+        /// Reference to the currently selected item on the Team Drive tab
+        /// </summary>
+        private OneDriveItem CurrentTeamDriveItem;
+
+        /// <summary>
         /// Reference to the currently displayed folder on OneDrive for the active tab
         /// </summary>
         public OneDriveItem CurrentOneDriveItem
         {
-            get { return FilesTabControl.SelectedIndex == 0 ? CurrentMyOneDriveItem : CurrentSharedWithMeOneDriveItem; }
+            get
+            {
+                switch (FilesTabControl.SelectedIndex)
+                {
+                    case 0: return CurrentMyOneDriveItem;
+                    case 1: return CurrentSharedWithMeOneDriveItem;
+                    case 2: return CurrentTeamDriveItem;
+                    default: return CurrentMyOneDriveItem;
+                }
+            }
         }
 
         /// <summary>
@@ -59,17 +83,55 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             set { FileNameTextBox.Enabled = value; }
         }
 
-        public OneDriveFilePickerDialog(OneDriveApi oneDriveApi)
+        public OneDriveFilePickerDialog(OneDriveApi oneDriveApi) : this(oneDriveApi, null)
+        {
+        }
+
+        public OneDriveFilePickerDialog(OneDriveApi oneDriveApi, string databasePath)
         {
             InitializeComponent();
 
             _oneDriveApi = oneDriveApi;
+            _databasePath = databasePath;
 
             var sharedWithMeDisabled = (oneDriveApi is OneDriveForBusinessO365Api);
 
             SharedWithMePicker.Visible = !sharedWithMeDisabled;
             SharedWithMeUpButton.Visible = !sharedWithMeDisabled;
             SharedWithMeNotAvailableLabel.Visible = sharedWithMeDisabled;
+
+            // Load Team Drive configuration
+            LoadTeamDriveConfig();
+        }
+
+        /// <summary>
+        /// Loads Team Drive configuration from the per-database settings
+        /// </summary>
+        private void LoadTeamDriveConfig()
+        {
+            if (!string.IsNullOrEmpty(_databasePath))
+            {
+                var config = KoenZomers.KeePass.OneDriveSync.Configuration.GetPasswordDatabaseConfiguration(_databasePath);
+                _teamDriveId = config.TeamDriveId;
+                _teamDrivePath = config.TeamDrivePath;
+                _teamDriveName = config.TeamDriveName;
+            }
+
+            // Update tab name based on configuration
+            if (!string.IsNullOrEmpty(_teamDriveName))
+            {
+                TeamDriveTabPage.Text = _teamDriveName;
+            }
+            else
+            {
+                TeamDriveTabPage.Text = "Team Drive";
+            }
+
+            // Show/hide setup panel based on configuration state
+            bool isConfigured = !string.IsNullOrEmpty(_teamDriveId);
+            TeamDrivePicker.Visible = isConfigured;
+            TeamDrivePathTextBox.Visible = isConfigured;
+            TeamDriveSetupPanel.Visible = !isConfigured;
         }
 
         /// <summary>
@@ -149,8 +211,10 @@ namespace KoenZomersKeePassOneDriveSync.Forms
                 // Load shared items using Graph when available; fallback to legacy sharedWithMe if needed
                 var allItems = new System.Collections.Generic.List<OneDriveItem>();
 
-                // 1. SharedWithMe API
+                // 1. SharedWithMe API - try Graph first, then fallback to legacy API
                 OneDriveItemCollection sharedItems = null;
+                bool graphApiFailed = false;
+
                 try
                 {
                     sharedItems = await Providers.GraphApiHelper.GetSharedWithMeItems(_oneDriveApi);
@@ -158,6 +222,12 @@ namespace KoenZomersKeePassOneDriveSync.Forms
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine("SharedWithMe (Graph) Error: " + ex.Message);
+                    graphApiFailed = true;
+                }
+
+                // Fallback to legacy API if Graph failed (must be outside catch block for C# 5)
+                if (graphApiFailed)
+                {
                     try
                     {
                         sharedItems = await _oneDriveApi.GetSharedWithMe();
@@ -347,6 +417,77 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             FileNameTextBox_TextChanged(null, null);
         }
 
+        /// <summary>
+        /// Loads the items from the Team Drive folder (configured SharePoint location)
+        /// </summary>
+        public async Task LoadTeamDriveItems()
+        {
+            if (string.IsNullOrEmpty(_teamDriveId))
+            {
+                // Not configured - show setup panel
+                TeamDriveSetupPanel.Visible = true;
+                TeamDrivePicker.Visible = false;
+                return;
+            }
+
+            TeamDrivePicker.Items.Clear();
+            TeamDrivePathTextBox.Text = string.IsNullOrEmpty(_teamDrivePath) ? "/" : _teamDrivePath;
+
+            try
+            {
+                var itemCollection = await Providers.GraphApiHelper.GetDrivePathChildren(
+                    _oneDriveApi, _teamDriveId, _teamDrivePath);
+
+                if (itemCollection == null || itemCollection.Collection == null)
+                {
+                    return;
+                }
+
+                // Sort: folders first, then by name
+                var sortedItems = itemCollection.Collection
+                    .OrderBy(i => i.Folder == null)
+                    .ThenBy(i => i.Name);
+
+                foreach (var oneDriveItem in sortedItems)
+                {
+                    var listViewItem = new ListViewItem
+                    {
+                        Text = oneDriveItem.Name,
+                        Tag = oneDriveItem,
+                        ImageKey = oneDriveItem.Folder != null ? "Folder" : "File",
+                        Selected = oneDriveItem.Name.Equals(FileNameTextBox.Text, StringComparison.InvariantCultureIgnoreCase)
+                    };
+
+                    // Add tooltip with file info
+                    if (oneDriveItem.Size > 0)
+                    {
+                        listViewItem.ToolTipText = string.Format("Size: {0:n0} bytes", oneDriveItem.Size);
+                    }
+                    if (oneDriveItem.CreatedDateTime != null)
+                    {
+                        listViewItem.ToolTipText += Environment.NewLine + string.Format("Created: {0:d MMMM yyyy HH:mm:ss}", oneDriveItem.CreatedDateTime);
+                    }
+                    if (oneDriveItem.LastModifiedDateTime != null)
+                    {
+                        listViewItem.ToolTipText += Environment.NewLine + string.Format("Last modified: {0:d MMMM yyyy HH:mm:ss}", oneDriveItem.LastModifiedDateTime);
+                    }
+
+                    TeamDrivePicker.Items.Add(listViewItem);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    string.Format("Could not load Team Drive items: {0}", ex.Message),
+                    "Team Drive Error",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+            }
+
+            // Define if the OK button should be enabled
+            FileNameTextBox_TextChanged(null, null);
+        }
+
         private async void CloudLocationPicker_DoubleClick(object sender, EventArgs e)
          {
              if (CloudLocationPicker.SelectedItems.Count == 0) return;
@@ -525,15 +666,25 @@ namespace KoenZomersKeePassOneDriveSync.Forms
                 await LoadSharedWithMeItems();
             }
 
+            // When switching to the "Team KeePass" tab and the items have not been loaded yet, load them now
+            if (FilesTabControl.SelectedIndex == 2 && TeamDrivePicker.Items.Count == 0)
+            {
+                await LoadTeamDriveItems();
+            }
+
             // Ensure the OK button is properly enabled/disabled when switching tabs
             switch (FilesTabControl.SelectedIndex)
             {
+                case 0:
+                    CloudLocationPicker_ItemSelectionChanged(sender, null);
+                    break;
+
                 case 1:
                     SharedWithMePicker_ItemSelectionChanged(sender, null);
                     break;
 
-                case 0:
-                    CloudLocationPicker_ItemSelectionChanged(sender, null);
+                case 2:
+                    TeamDrivePicker_ItemSelectionChanged(sender, null);
                     break;
             }
         }
@@ -606,5 +757,81 @@ namespace KoenZomersKeePassOneDriveSync.Forms
                 CurrentSharedWithMeOneDriveItem = selectedItem.Tag as OneDriveItem;
             }
         }
+
+        #region Team Drive Tab Event Handlers
+
+        private void TeamDrivePicker_ItemSelectionChanged(object sender, ListViewItemSelectionChangedEventArgs e)
+        {
+            if (TeamDrivePicker.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            var selectedItem = TeamDrivePicker.SelectedItems[0];
+            if (selectedItem.ImageKey == "File")
+            {
+                FileNameTextBox.Text = selectedItem.Text;
+                OKButton.Enabled = true;
+                CurrentTeamDriveItem = selectedItem.Tag as OneDriveItem;
+            }
+        }
+
+        private void TeamDrivePicker_DoubleClick(object sender, EventArgs e)
+        {
+            if (TeamDrivePicker.SelectedItems.Count == 0) return;
+
+            var selectedItem = TeamDrivePicker.SelectedItems[0];
+            if (selectedItem.ImageKey == "File" && OKButton.Enabled)
+            {
+                OKButton_Click(sender, e);
+                return;
+            }
+            // Note: Navigation into subfolders is not implemented in this version
+        }
+
+        private void TeamDrivePicker_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                TeamDrivePicker_DoubleClick(sender, e);
+            }
+        }
+
+        private async void RefreshTeamDriveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await LoadTeamDriveItems();
+        }
+
+        private async void ConfigureTeamDriveButton_Click(object sender, EventArgs e)
+        {
+            using (var configDialog = new TeamDriveConfigDialog(_oneDriveApi))
+            {
+                if (configDialog.ShowDialog(this) == DialogResult.OK)
+                {
+                    // Save configuration
+                    if (!string.IsNullOrEmpty(_databasePath))
+                    {
+                        var config = KoenZomers.KeePass.OneDriveSync.Configuration.GetPasswordDatabaseConfiguration(_databasePath);
+                        config.TeamDriveId = configDialog.SelectedDriveId;
+                        config.TeamDrivePath = configDialog.SelectedPath;
+                        config.TeamDriveName = configDialog.SelectedDriveName;
+                        KoenZomers.KeePass.OneDriveSync.Configuration.Save();
+                    }
+
+                    // Update local variables
+                    _teamDriveId = configDialog.SelectedDriveId;
+                    _teamDrivePath = configDialog.SelectedPath;
+                    _teamDriveName = configDialog.SelectedDriveName;
+
+                    // Update UI
+                    LoadTeamDriveConfig();
+
+                    // Load items
+                    await LoadTeamDriveItems();
+                }
+            }
+        }
+
+        #endregion
     }
 }

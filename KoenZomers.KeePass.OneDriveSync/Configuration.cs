@@ -133,6 +133,24 @@ namespace KoenZomers.KeePass.OneDriveSync
         [DataMember]
         public Enums.CloudStorageType? CloudStorageType { get; set; }
 
+        /// <summary>
+        /// Gets or sets the Drive ID for the Team Drive feature (SharePoint document library)
+        /// </summary>
+        [DataMember]
+        public string TeamDriveId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the folder path within the Team Drive
+        /// </summary>
+        [DataMember]
+        public string TeamDrivePath { get; set; }
+
+        /// <summary>
+        /// Gets or sets the display name for the Team Drive (e.g., Site name / Drive name)
+        /// </summary>
+        [DataMember]
+        public string TeamDriveName { get; set; }
+
         #endregion
 
         #region Methods

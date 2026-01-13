@@ -38,7 +38,7 @@ namespace KoenZomersKeePassOneDriveSync
         /// <summary>
         /// Application ID to use for communication with the Microsoft Graph API
         /// </summary>
-        internal const string GraphApiApplicationId = "7bcec80a-2ffe-4713-b9ea-0150361c8209";
+        internal const string GraphApiApplicationId = "b3f2706f-e019-43b6-8a62-3935d1d9ad71";
 
         #endregion
 

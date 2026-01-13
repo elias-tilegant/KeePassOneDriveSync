@@ -17,7 +17,8 @@ namespace KoenZomersKeePassOneDriveSync.Providers
     /// </summary>
     internal static class GraphApiHelper
     {
-        private const string GraphApiBaseUrl = "https://graph.microsoft.com/v1.0";
+        // IMPORTANT: Must end with / for relative paths to work correctly with HttpClient
+        private const string GraphApiBaseUrl = "https://graph.microsoft.com/v1.0/";
 
         /// <summary>
         /// Retrieves items the user is following in their OneDrive for Business.
@@ -28,7 +29,7 @@ namespace KoenZomersKeePassOneDriveSync.Providers
         /// <returns>Collection of OneDriveItem objects representing followed items</returns>
         public static async Task<OneDriveItemCollection> GetFollowingItems(OneDriveApi oneDriveApi)
         {
-            return await GetItemsFromGraph(oneDriveApi, "/me/drive/following");
+            return await GetItemsFromGraph(oneDriveApi, "me/drive/following");
         }
 
         /// <summary>
@@ -38,7 +39,125 @@ namespace KoenZomersKeePassOneDriveSync.Providers
         /// <returns>Collection of OneDriveItem objects representing items shared with the user</returns>
         public static async Task<OneDriveItemCollection> GetSharedWithMeItems(OneDriveApi oneDriveApi)
         {
-            return await GetItemsFromGraph(oneDriveApi, "/me/drive/sharedWithMe");
+            return await GetItemsFromGraph(oneDriveApi, "me/drive/sharedWithMe");
+        }
+
+        /// <summary>
+        /// Retrieves items from a specific drive path using Microsoft Graph.
+        /// This allows direct access to a SharePoint folder by drive ID and path.
+        /// </summary>
+        /// <param name="oneDriveApi">Authenticated OneDrive API instance</param>
+        /// <param name="driveId">The ID of the drive (e.g., SharePoint document library)</param>
+        /// <param name="folderPath">The path within the drive (e.g., "Infrastruktur/07 Keepass")</param>
+        /// <returns>Collection of OneDriveItem objects representing the folder contents</returns>
+        public static async Task<OneDriveItemCollection> GetDrivePathChildren(
+            OneDriveApi oneDriveApi,
+            string driveId,
+            string folderPath)
+        {
+            // Build the request path (no leading slash - BaseUrl ends with /)
+            string requestPath;
+            if (string.IsNullOrEmpty(folderPath))
+            {
+                // Root of drive
+                requestPath = string.Format("drives/{0}/root/children", driveId);
+            }
+            else
+            {
+                requestPath = string.Format("drives/{0}/root:/{1}:/children", driveId, folderPath);
+            }
+            return await GetItemsFromGraph(oneDriveApi, requestPath);
+        }
+
+        /// <summary>
+        /// Retrieves SharePoint sites the user has access to
+        /// </summary>
+        /// <param name="oneDriveApi">Authenticated OneDrive API instance</param>
+        /// <returns>Array of GraphSite objects representing accessible SharePoint sites</returns>
+        public static async Task<GraphSite[]> GetSites(OneDriveApi oneDriveApi)
+        {
+            var accessToken = oneDriveApi.AccessToken != null ? oneDriveApi.AccessToken.AccessToken : null;
+
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new InvalidOperationException("No valid access token available. Please authenticate first.");
+            }
+
+            using (var httpClient = CreateGraphHttpClient(accessToken))
+            {
+                var sites = new List<GraphSite>();
+                var nextRequest = "sites?search=*";
+
+                while (!string.IsNullOrEmpty(nextRequest))
+                {
+                    var response = await httpClient.GetAsync(nextRequest);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        throw new HttpRequestException(
+                            string.Format("Graph API request failed with status {0}: {1}", response.StatusCode, errorContent));
+                    }
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<GraphSiteCollectionResponse>(jsonResponse);
+
+                    if (result != null && result.Value != null && result.Value.Length > 0)
+                    {
+                        sites.AddRange(result.Value);
+                    }
+
+                    nextRequest = result != null ? result.NextLink : null;
+                }
+
+                return sites.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Retrieves drives (document libraries) for a specific SharePoint site
+        /// </summary>
+        /// <param name="oneDriveApi">Authenticated OneDrive API instance</param>
+        /// <param name="siteId">The ID of the SharePoint site</param>
+        /// <returns>Array of GraphDrive objects representing the site's document libraries</returns>
+        public static async Task<GraphDrive[]> GetSiteDrives(OneDriveApi oneDriveApi, string siteId)
+        {
+            var accessToken = oneDriveApi.AccessToken != null ? oneDriveApi.AccessToken.AccessToken : null;
+
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new InvalidOperationException("No valid access token available. Please authenticate first.");
+            }
+
+            using (var httpClient = CreateGraphHttpClient(accessToken))
+            {
+                var drives = new List<GraphDrive>();
+                var nextRequest = string.Format("sites/{0}/drives", siteId);
+
+                while (!string.IsNullOrEmpty(nextRequest))
+                {
+                    var response = await httpClient.GetAsync(nextRequest);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        var errorContent = await response.Content.ReadAsStringAsync();
+                        throw new HttpRequestException(
+                            string.Format("Graph API request failed with status {0}: {1}", response.StatusCode, errorContent));
+                    }
+
+                    var jsonResponse = await response.Content.ReadAsStringAsync();
+                    var result = JsonConvert.DeserializeObject<GraphDriveCollectionResponse>(jsonResponse);
+
+                    if (result != null && result.Value != null && result.Value.Length > 0)
+                    {
+                        drives.AddRange(result.Value);
+                    }
+
+                    nextRequest = result != null ? result.NextLink : null;
+                }
+
+                return drives.ToArray();
+            }
         }
 
         private static async Task<OneDriveItemCollection> GetItemsFromGraph(OneDriveApi oneDriveApi, string requestPath)
@@ -136,5 +255,59 @@ namespace KoenZomersKeePassOneDriveSync.Providers
             [JsonProperty("@odata.nextLink")]
             public string NextLink { get; set; }
         }
+
+        private class GraphSiteCollectionResponse
+        {
+            [JsonProperty("value")]
+            public GraphSite[] Value { get; set; }
+
+            [JsonProperty("@odata.nextLink")]
+            public string NextLink { get; set; }
+        }
+
+        private class GraphDriveCollectionResponse
+        {
+            [JsonProperty("value")]
+            public GraphDrive[] Value { get; set; }
+
+            [JsonProperty("@odata.nextLink")]
+            public string NextLink { get; set; }
+        }
+    }
+
+    /// <summary>
+    /// Represents a SharePoint site from Microsoft Graph API
+    /// </summary>
+    public class GraphSite
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("displayName")]
+        public string DisplayName { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("webUrl")]
+        public string WebUrl { get; set; }
+    }
+
+    /// <summary>
+    /// Represents a drive (document library) from Microsoft Graph API
+    /// </summary>
+    public class GraphDrive
+    {
+        [JsonProperty("id")]
+        public string Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("driveType")]
+        public string DriveType { get; set; }
+
+        [JsonProperty("webUrl")]
+        public string WebUrl { get; set; }
     }
 }

@@ -159,6 +159,12 @@
     <Compile Include="Forms\OneDriveConfigForm.Designer.cs">
       <DependentUpon>OneDriveConfigForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\TeamDriveConfigDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\TeamDriveConfigDialog.Designer.cs">
+      <DependentUpon>TeamDriveConfigDialog.cs</DependentUpon>
+    </Compile>
     <Compile Include="Providers\MicrosoftGraph\MicrosoftGraphDeviceCodeAuthCheckSucceededResponse.cs" />
     <Compile Include="Providers\MicrosoftGraph\MicrosoftGraphDeviceCodeAuthCheckFailedResponse.cs" />
     <Compile Include="Providers\MicrosoftGraph\MicrosoftGraphDeviceCodeResponse.cs" />
