@@ -36,6 +36,10 @@ namespace KoenZomersKeePassOneDriveSync.Forms
         {
             InitializeComponent();
             _oneDriveApi = oneDriveApi;
+
+            // Load icons for the folder list view
+            IconsList.Images.Add("File", KoenZomersKeePassOneDriveSync.Resources.File);
+            IconsList.Images.Add("Folder", KoenZomersKeePassOneDriveSync.Resources.Folder);
         }
 
         private async void TeamDriveConfigDialog_Load(object sender, EventArgs e)

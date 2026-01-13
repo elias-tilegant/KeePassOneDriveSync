@@ -99,6 +99,8 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             this.FolderListView.SmallImageList = this.IconsList;
             this.FolderListView.TabIndex = 5;
             this.FolderListView.UseCompatibleStateImageBehavior = false;
+            this.FolderListView.View = System.Windows.Forms.View.Tile;
+            this.FolderListView.TileSize = new System.Drawing.Size(200, 40);
             this.FolderListView.DoubleClick += new System.EventHandler(this.FolderListView_DoubleClick);
             this.FolderListView.KeyUp += new System.Windows.Forms.KeyEventHandler(this.FolderListView_KeyUp);
             //
