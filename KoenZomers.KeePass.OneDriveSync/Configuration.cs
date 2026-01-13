@@ -202,7 +202,7 @@ namespace KoenZomers.KeePass.OneDriveSync
             }
             catch (JsonSerializationException)
             {                
-                MessageBox.Show("Unable to parse the plugin configuration for the KeePass OneDriveSync plugin. If this happens again, please let me know. Sorry for the inconvinience. Koen Zomers <koen@zomers.eu>", "KeePass OneDriveSync Plugin", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
+                MessageBox.Show("Unable to parse the plugin configuration for the KeePass OneDriveSync plugin. If this happens again, please report the issue. Sorry for the inconvenience. Originally by Koen Zomers, maintained by Elias Tilegant.", "KeePass OneDriveSync Plugin", MessageBoxButtons.OK, MessageBoxIcon.Asterisk);
 
                 // Reset the configuration so at least it works again next time, all be it that all configuration will be lost
                 PasswordDatabases = new Dictionary<string, Configuration>();

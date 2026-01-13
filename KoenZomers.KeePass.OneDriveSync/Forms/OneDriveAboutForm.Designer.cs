@@ -70,7 +70,7 @@
             this.NameLabel.Name = "NameLabel";
             this.NameLabel.Size = new System.Drawing.Size(405, 28);
             this.NameLabel.TabIndex = 6;
-            this.NameLabel.Text = "Koen Zomers (koen@zomers.eu)";
+            this.NameLabel.Text = "Originally by Koen Zomers, maintained by Elias Tilegant";
             this.NameLabel.UseMnemonic = false;
             // 
             // ExplanationLabel
@@ -84,7 +84,7 @@
             this.ExplanationLabel.Name = "ExplanationLabel";
             this.ExplanationLabel.Size = new System.Drawing.Size(558, 118);
             this.ExplanationLabel.TabIndex = 7;
-            this.ExplanationLabel.Text = "This KeePass plugin allows synchronizing your KeePass databases with one or multiple OneDrive accounts. It is inspired by KeeSkyDrive by Oleksandr Senyuk. It is free to use and open source. Please leave these credits in place if you decide to use my source code. Feel free to contact me in case of questions or suggestions.";
+            this.ExplanationLabel.Text = "This KeePass plugin allows synchronizing your KeePass databases with one or multiple OneDrive accounts. It is inspired by KeeSkyDrive by Oleksandr Senyuk. Originally developed by Koen Zomers, now maintained by Elias Tilegant under EPL-1.0 license.";
             // 
             // WebsiteLinkLabel
             // 
@@ -96,7 +96,7 @@
             this.WebsiteLinkLabel.Size = new System.Drawing.Size(398, 20);
             this.WebsiteLinkLabel.TabIndex = 9;
             this.WebsiteLinkLabel.TabStop = true;
-            this.WebsiteLinkLabel.Text = "https://github.com/KoenZomers/KeePassOneDriveSync";
+            this.WebsiteLinkLabel.Text = "https://github.com/joshelboy/KeePassOneDriveSync";
             this.WebsiteLinkLabel.Click += new System.EventHandler(this.WebsiteLinkLabel_Click);
             // 
             // OneDriveAboutForm

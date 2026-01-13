@@ -56,7 +56,7 @@
             this.NameLabel.Name = "NameLabel";
             this.NameLabel.Size = new System.Drawing.Size(608, 27);
             this.NameLabel.TabIndex = 10;
-            this.NameLabel.Text = "Koen Zomers <mail@koenzomers.nl>";
+            this.NameLabel.Text = "Originally by Koen Zomers, maintained by Elias Tilegant";
             this.NameLabel.UseMnemonic = false;
             // 
             // CloseButton
