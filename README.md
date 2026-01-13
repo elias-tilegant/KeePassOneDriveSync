@@ -1,8 +1,8 @@
 # KeePass OneDrive Sync
 
-> Notice: Through the years I have enjoyed building and maintaining this code. I have been surprised to see how many people started using this plugin and how often around the globe I met people that asked me if I was the person behind the plugin. Time however is scarse and as much as I would like to, I'm having too many projects to work on in my spare time, so I need to get rid of some, this unfortunately being one. I will therefore no longer maintain this code. Feel free to fork off of it and make your own version out of it. I'll be happy to link to it.
+> Notice: This is a forked Version of the original [KoenZomers/KeePassOneDriveSync](https://github.com/KoenZomers/KeePassOneDriveSync) which is modified to offer an alternative to the [deprecated sharedWithMe Graph API](https://github.com/microsoftgraph/microsoft-graph-docs-contrib/blob/main/api-reference/v1.0/api/drive-sharedwithme.md), since my company relies on Sharepoint as Keepass Cloud Storage. See changes after 2.1.2.2 for more details!
 
-![](https://github.com/KoenZomers/KeePassOneDriveSync/workflows/.NET%20Core/badge.svg) ![](https://img.shields.io/github/downloads/koenzomers/KeePassOneDriveSync/total.svg) ![](https://img.shields.io/github/issues/koenzomers/KeePassOneDriveSync.svg) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
+![](https://github.com/KoenZomers/KeePassOneDriveSync/workflows/.NET%20Core/badge.svg) ![](https://img.shields.io/github/downloads/joshelboy/KeePassOneDriveSync/total.svg) ![](https://img.shields.io/github/issues/joshelboy/KeePassOneDriveSync.svg) [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 A free plugin for KeePass (installable and portable) that allows syncing of multiple password databases from multiple OneDrives to a local version. It allows you to synchronize an unlimited amount of KeePass databases with an unlimited amount of OneDrives. So i.e. you can synchronize your personal KeePass database with your personal OneDrive and your work related KeePass with a OneDrive for Business on Office 365 that is shared among your colleagues, if you wish. This way it's also easy to be able to access your same KeePass database from all of your devices. Note that this plugin is only supported on Windows based platforms, but [has been reported to work on \*nix as well using Mono](https://github.com/KoenZomers/KeePassOneDriveSync/wiki/System-Requirements#nix-through-mono). It can also operate in conjunction with other KeePass plugins serving other operating systems such as KeePass2Android on Android devices.
 
@@ -20,6 +20,10 @@ Download the PLGX and place it inside your KeePass\Plugins folder. Typically thi
 - [Frequently Asked Questions](https://github.com/KoenZomers/KeePassOneDriveSync/wiki/FAQ)
 
 ## Latest Version
+
+Version 2.2.0.0 - January 13, 2026
+
+- Implemented a new Tab "Team Drives" for direct Sharepoint Document Library access
 
 Version 2.1.2.2 - November 24, 2021
 
