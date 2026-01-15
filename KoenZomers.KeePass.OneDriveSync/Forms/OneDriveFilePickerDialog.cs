@@ -40,6 +40,11 @@ namespace KoenZomersKeePassOneDriveSync.Forms
         private OneDriveItem CurrentTeamDriveItem;
 
         /// <summary>
+        /// Tracks whether the SharedWithMe deprecation warning has been shown this session
+        /// </summary>
+        private bool _sharedWithMeDeprecationShown = false;
+
+        /// <summary>
         /// Reference to the currently displayed folder on OneDrive for the active tab
         /// </summary>
         public OneDriveItem CurrentOneDriveItem
@@ -664,6 +669,20 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             if(FilesTabControl.SelectedIndex == 1 && SharedWithMePicker.Items.Count == 0)
             {
                 await LoadSharedWithMeItems();
+            }
+
+            // Show deprecation warning once when switching to Shared with me tab
+            if (FilesTabControl.SelectedIndex == 1 && !_sharedWithMeDeprecationShown)
+            {
+                _sharedWithMeDeprecationShown = true;
+                MessageBox.Show(
+                    "The 'Shared with me' feature uses a deprecated Microsoft Graph API endpoint " +
+                    "(sharedWithMe) which may stop working in the future.\n\n" +
+                    "For reliable access to shared files, please use the 'Team Drive' tab instead, " +
+                    "which uses the SharePoint API.",
+                    "Deprecation Notice",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
             }
 
             // When switching to the "Team KeePass" tab and the items have not been loaded yet, load them now
