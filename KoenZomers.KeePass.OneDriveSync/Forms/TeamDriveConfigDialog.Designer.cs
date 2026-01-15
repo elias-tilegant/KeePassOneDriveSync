@@ -137,7 +137,7 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             //
             this.CancelDialogButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.CancelDialogButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.CancelDialogButton.Location = new System.Drawing.Point(346, 493);
+            this.CancelDialogButton.Location = new System.Drawing.Point(290, 493);
             this.CancelDialogButton.Name = "CancelDialogButton";
             this.CancelDialogButton.Size = new System.Drawing.Size(110, 35);
             this.CancelDialogButton.TabIndex = 9;
