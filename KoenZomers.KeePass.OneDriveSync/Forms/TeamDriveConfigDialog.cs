@@ -247,23 +247,6 @@ namespace KoenZomersKeePassOneDriveSync.Forms
         private void UpdateSelectedPath()
         {
             SelectedPath = _currentPath;
-            SaveButton.Enabled = !string.IsNullOrEmpty(SelectedDriveId);
-        }
-
-        private void SaveButton_Click(object sender, EventArgs e)
-        {
-            if (string.IsNullOrEmpty(SelectedDriveId))
-            {
-                MessageBox.Show(
-                    "Please select a document library first.",
-                    "Configuration Incomplete",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Warning);
-                return;
-            }
-
-            DialogResult = DialogResult.OK;
-            Close();
         }
 
         private void CancelButton_Click(object sender, EventArgs e)
@@ -286,14 +269,21 @@ namespace KoenZomersKeePassOneDriveSync.Forms
 
         private void UseCurrentFolderButton_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(SelectedDriveId))
+            {
+                MessageBox.Show(
+                    "Please select a document library first.",
+                    "Configuration Incomplete",
+                    MessageBoxButtons.OK,
+                    MessageBoxIcon.Warning);
+                return;
+            }
+
             // Use the currently displayed folder (not navigate into it)
             UpdateSelectedPath();
 
-            if (!string.IsNullOrEmpty(SelectedDriveId))
-            {
-                DialogResult = DialogResult.OK;
-                Close();
-            }
+            DialogResult = DialogResult.OK;
+            Close();
         }
     }
 }

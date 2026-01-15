@@ -27,7 +27,6 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             this.IconsList = new System.Windows.Forms.ImageList(this.components);
             this.CurrentPathTextBox = new System.Windows.Forms.TextBox();
             this.UpButton = new System.Windows.Forms.Button();
-            this.SaveButton = new System.Windows.Forms.Button();
             this.CancelDialogButton = new System.Windows.Forms.Button();
             this.UseCurrentFolderButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
@@ -134,18 +133,6 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             this.UpButton.UseVisualStyleBackColor = true;
             this.UpButton.Click += new System.EventHandler(this.UpButton_Click);
             //
-            // SaveButton
-            //
-            this.SaveButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.SaveButton.Enabled = false;
-            this.SaveButton.Location = new System.Drawing.Point(462, 493);
-            this.SaveButton.Name = "SaveButton";
-            this.SaveButton.Size = new System.Drawing.Size(110, 35);
-            this.SaveButton.TabIndex = 8;
-            this.SaveButton.Text = "Save";
-            this.SaveButton.UseVisualStyleBackColor = true;
-            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
-            //
             // CancelDialogButton
             //
             this.CancelDialogButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -160,25 +147,24 @@ namespace KoenZomersKeePassOneDriveSync.Forms
             //
             // UseCurrentFolderButton
             //
-            this.UseCurrentFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.UseCurrentFolderButton.Location = new System.Drawing.Point(12, 493);
+            this.UseCurrentFolderButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.UseCurrentFolderButton.Location = new System.Drawing.Point(412, 493);
             this.UseCurrentFolderButton.Name = "UseCurrentFolderButton";
             this.UseCurrentFolderButton.Size = new System.Drawing.Size(160, 35);
-            this.UseCurrentFolderButton.TabIndex = 10;
+            this.UseCurrentFolderButton.TabIndex = 8;
             this.UseCurrentFolderButton.Text = "Use This Folder";
             this.UseCurrentFolderButton.UseVisualStyleBackColor = true;
             this.UseCurrentFolderButton.Click += new System.EventHandler(this.UseCurrentFolderButton_Click);
             //
             // TeamDriveConfigDialog
             //
-            this.AcceptButton = this.SaveButton;
+            this.AcceptButton = this.UseCurrentFolderButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.CancelDialogButton;
             this.ClientSize = new System.Drawing.Size(584, 541);
             this.Controls.Add(this.UseCurrentFolderButton);
             this.Controls.Add(this.CancelDialogButton);
-            this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.UpButton);
             this.Controls.Add(this.CurrentPathTextBox);
             this.Controls.Add(this.FolderListView);
@@ -209,7 +195,6 @@ namespace KoenZomersKeePassOneDriveSync.Forms
         private System.Windows.Forms.ImageList IconsList;
         private System.Windows.Forms.TextBox CurrentPathTextBox;
         private System.Windows.Forms.Button UpButton;
-        private System.Windows.Forms.Button SaveButton;
         private System.Windows.Forms.Button CancelDialogButton;
         private System.Windows.Forms.Button UseCurrentFolderButton;
     }
